@@ -1,0 +1,35 @@
+version: '3.4'
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - 8012:80
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./:/var/www/events
+
+  php-fpm:
+    build: ./docker/php-fpm
+    volumes:
+      - ./:/var/www/events
+
+  memcached:
+    container_name: mymemcached
+    image: memcached:latest
+    ports:
+      - "11211:11211"
+
+  mysql:
+    image: mysql:5.7
+    ports:
+      - 3309:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 3fsqdrifj6
+      MYSQL_DATABASE: events
+      MYSQL_USER: alex
+      MYSQL_PASSWORD: 3fsqdrifj6
+    volumes:
+      - ./docker/mysql:/docker-entrypoint-initdb.d
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./docker/mysql/data:/var/lib/mysql
